@@ -30,10 +30,18 @@ body{display:flex;flex-direction:column;padding:env(safe-area-inset-top) 0 env(s
 .gl{margin-top:16px;font-size:16.5px;line-height:1.5}
 .gl .t{font-size:12.5px;color:var(--mut);display:block;margin-bottom:2px}
 .gl div{margin-bottom:3px}.gl b{font-weight:700}.gl i{font-style:normal;color:var(--ipa);font-family:"Noto Sans","DejaVu Sans",-apple-system;font-size:.92em}
-#btns{display:grid;grid-template-columns:1fr 1fr 1.25fr 1.25fr 1fr;gap:8px;padding:8px 12px 10px}
-#btns button{font-size:15px;padding:13px 0;border-radius:13px;border:0;background:var(--btn);color:var(--fg);font-family:inherit}
-#btns .ok{background:var(--ok);color:#fff;font-weight:600}
-#btns .again{background:var(--acc2);color:#fff;font-weight:600}
+#btns{padding:6px 12px calc(10px + env(safe-area-inset-bottom,0px));}
+body{padding-bottom:0}
+#btns .sec2{display:flex;justify-content:flex-end;gap:8px;margin-bottom:8px}
+#btns .b2{font-family:inherit;font-size:14px;height:40px;padding:0 14px;border-radius:12px;border:1px solid var(--line);background:transparent;color:var(--mut);display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.15}
+#btns .b2 small{font-size:10.5px;opacity:.8}
+#btns .b2.on{color:var(--ok);border-color:var(--ok)}
+#btns .main{display:flex;gap:10px;align-items:flex-end}
+#btns .main button{font-family:inherit;border:0;border-radius:18px}
+#btns .bp{width:54px;height:56px;align-self:flex-end;background:var(--btn);color:var(--mut);font-size:18px}
+#btns .bplay{flex:1;height:66px;background:var(--btn);color:var(--fg);font-size:19px;font-weight:600}
+#btns .bnext{flex:1.55;height:72px;background:var(--acc);color:#fff;font-size:22px;font-weight:700;box-shadow:0 2px 6px rgba(0,0,0,.18)}
+#btns button:active{transform:scale(.97);opacity:.85}
 #start,#panel{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:9}
 #start .box,#panel .box{background:var(--card);border-radius:20px;padding:24px;width:min(88vw,380px);text-align:center}
 #start h1{font-size:24px;margin:0 0 6px}#start p{color:var(--mut);font-size:14.5px;line-height:1.5;margin:6px 0 18px}
@@ -49,12 +57,15 @@ body{display:flex;flex-direction:column;padding:env(safe-area-inset-top) 0 env(s
 #reset{background:#d93025;color:#fff}#close{background:var(--btn);color:var(--fg)}
 .hidden{display:none!important}
 .empty{text-align:center;color:var(--mut);padding:60px 10px;font-size:17px;line-height:1.7}
-#toast{position:fixed;left:50%;bottom:110px;transform:translateX(-50%);background:rgba(0,0,0,.78);color:#fff;padding:8px 16px;border-radius:18px;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none}
+#toast{position:fixed;left:50%;bottom:170px;transform:translateX(-50%);background:rgba(0,0,0,.78);color:#fff;padding:8px 16px;border-radius:18px;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none}
 </style></head><body>
 <div id="top"><span id="prog"></span><button id="gear" aria-label="设置">⚙︎</button></div>
 <div id="bar"><i></i></div>
 <div id="wrap"><div id="card" class="card"></div></div>
-<div id="btns"><button id="prev">◀︎ 上一个</button><button id="play">🔊 重播</button><button id="again" class="again">再来一遍</button><button id="ok" class="ok">✓ 已掌握</button><button id="next">下一个 ▶︎</button></div>
+<div id="btns">
+<div class="sec2"><button id="again" class="b2">稍后再看<small>4 张后再出现</small></button><button id="ok" class="b2">✓ 已掌握</button></div>
+<div class="main"><button id="prev" class="bp" aria-label="上一个">◀︎</button><button id="play" class="bplay">🔊 重播</button><button id="next" class="bnext">下一个 ▶︎</button></div>
+</div>
 <div id="start"><div class="box"><h1>DHH #501 单词卡</h1><p>完整音频：单词 → 慢速 → 中文 → 例句<br>左右滑动切换卡片，切换后自动播放。<br>进度保存在本机浏览器里。</p><button id="go">开始</button></div></div>
 <div id="panel" class="hidden"><div class="box"><h2>设置</h2>
 <div class="row" id="frow">范围<span class="seg" id="f"><button data-v="all">全部</button><button data-v="单词">单词</button><button data-v="短语">短语</button></span></div>
@@ -102,7 +113,7 @@ function render(anim){
    <div class="cn${S.hc?' hide':''}" id="cn">${esc(c.cn)}</div><div class="cnt"></div>
    ${c.ex?`<div class="ex">${c.ex}<div class="src">— ${esc(c.src)}</div></div>`:''}${gl}`;
   $('cn').onclick=()=>{$('cn').classList.remove('hide')};
-  $('ok').textContent=S.m[c.id]?'取消掌握':'✓ 已掌握';
+  $('ok').textContent=S.m[c.id]?'取消掌握':'✓ 已掌握'; $('ok').classList.toggle('on',!!S.m[c.id]);
   $('wrap').scrollTop=0;
   if(anim){el.style.transform=`translateX(${anim*30}px)`;el.style.opacity=.3;requestAnimationFrame(()=>{el.style.transform='';el.style.opacity=1})}
   au.src=AUDIO?AUDIO[c.id]:('audio/'+c.id+'.mp3');
@@ -112,7 +123,7 @@ function play(){ if(!S.q.length) return; au.currentTime=0; const p=au.play(); if
 function toast(t){const e=$('toast');e.textContent=t;e.style.opacity=1;clearTimeout(toast.t);toast.t=setTimeout(()=>e.style.opacity=0,1200)}
 function go(d){ if(!S.q.length) return; S.pos=(S.pos+d+S.q.length)%S.q.length; save(); render(-d); }
 $('next').onclick=()=>go(1); $('prev').onclick=()=>go(-1); $('play').onclick=()=>{unlocked=true;play()};
-$('again').onclick=()=>{ if(!S.q.length) return; const id=S.q[S.pos]; const at=Math.min(S.pos+5,S.q.length); S.q.splice(at,0,id); toast('稍后再来一遍'); go(1); };
+$('again').onclick=()=>{ if(!S.q.length) return; const id=S.q[S.pos]; const at=Math.min(S.pos+5,S.q.length); S.q.splice(at,0,id); toast('4 张后会再出现'); go(1); };
 $('ok').onclick=()=>{ if(!S.q.length) return; const id=S.q[S.pos];
   if(S.m[id]){delete S.m[id]; save(); toast('已取消掌握'); render(); return}
   S.m[id]=1;
